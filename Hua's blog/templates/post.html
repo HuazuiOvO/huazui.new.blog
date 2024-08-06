@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.content }}</p>
+    {% if post.filename %}
+        <p>
+            <a href="{{ url_for('uploaded_file', post_id=post_id, filename=post.filename) }}" target="_blank">Preview {{ post.filename }}</a> |
+            <a href="{{ url_for('uploaded_file', post_id=post_id, filename=post.filename) }}" download>Download {{ post.filename }}</a>
+        </p>
+    {% endif %}
+
+    <!-- Comments Section -->
+    <h2>Comments</h2>
+    <div class="comments">
+        {% if post.comments %}
+            {% for comment in post.comments %}
+            <div class="comment" style="display: flex; justify-content: space-between; align-items: center;">
+                <p>
+                    <strong>{{ comment.author }}</strong>: {{ comment.content }}
+                </p>
+                {% if session.get('logged_in') %}
+                <form action="{{ url_for('delete_comment', post_id=post_id, comment_index=loop.index0) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-link btn-sm delete-btn">&times;</button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <p id="no-comments-msg">There are no comments on this post, come and get the first one!</p>
+        {% endif %}
+    </div>
+
+    <!-- Add Comment Button -->
+    <button id="add-comment-btn" class="btn btn-primary">Add Comment</button>
+
+    <!-- Add Comment Form (Initially Hidden) -->
+    <div id="comment-form" style="display:none;">
+        <form action="{{ url_for('add_comment', post_id=post_id) }}" method="post">
+            <div class="form-group">
+                <label for="author">Name</label>
+                <input type="text" class="form-control" id="author" name="author" required>
+            </div>
+            <div class="form-group">
+                <label for="content">Comment</label>
+                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Comment</button>
+        </form>
+    </div>
+
+    <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Home</a>
+</div>
+
+<script>
+    document.getElementById('add-comment-btn').addEventListener('click', function() {
+        document.getElementById('comment-form').style.display = 'block';
+        this.style.display = 'none';
+    });
+</script>
+{% endblock %}

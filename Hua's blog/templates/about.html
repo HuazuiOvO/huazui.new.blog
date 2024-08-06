@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>About Me</h2>
+    <p>普通C2本科生一枚...</p>
+    <p>喜欢一切圆滚滚，胖乎乎，咬一口能爆汁的东西...</p>
+    <p>水豚  土拨鼠   小刺猬   海豹...</p>
+    <p>&代码小白一只，寻求伙伴共同进步...</p>
+    <div class="photo-gallery">
+        <img src="{{ url_for('static', filename='photo-1.jpg') }}" alt="Photo 1">
+        <img src="{{ url_for('static', filename='photo-2.jpg') }}" alt="Photo 2">
+        <img src="{{ url_for('static', filename='photo-3.jpg') }}" alt="Photo 3">
+    </div>
+</div>
+{% endblock %}

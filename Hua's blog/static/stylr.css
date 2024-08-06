@@ -1,0 +1,281 @@
+/* 基本样式 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-image: url('/static/header-image.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    padding: 80px 0;
+    text-align: center;
+    position: relative;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.button-container button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 15px; /* 调整为圆角按钮 */
+    cursor: pointer;
+}
+
+.button-container button:hover {
+    background-color: #0056b3;
+}
+
+
+.sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+}
+
+.sidebar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.sidebar h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    text-align: left; /* 左对齐 */
+}
+
+.sidebar p {
+    font-size: 1em;
+    color: #555;
+    text-align: left; /* 左对齐 */
+}
+
+.sidebar nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px; /* 增加上方距离 */
+}
+
+.sidebar nav ul li {
+    margin: 20px 0; /* 增加按键之间的距离 */
+}
+
+.sidebar nav ul li a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+    background-color: #ddd;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #bbb;
+}
+
+.social-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.social-links a {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+}
+
+.social-links img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.social-links img:hover {
+    transform: scale(1.1);
+}
+
+.widget {
+    margin-bottom: 30px; /* 增加与下方元素的距离 */
+}
+
+.content {
+    margin-left: 270px; /* Ensure content is not under the sidebar */
+    flex: 1;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.photo-gallery {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.photo-gallery img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #ffffff;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.25em;
+}
+
+.card-text {
+    margin: 10px 0;
+}
+
+.card a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.card a:hover {
+    text-decoration: underline;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.container {
+    padding: 16px;
+}
+
+input[type=password], input[type=text] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+button[type=submit] {
+    background-color: #007bff;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+button[type=submit]:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn {
+    background: transparent;
+    border: 1px solid red;
+    color: red;
+    font-size: 0.8em;
+    cursor: pointer;
+    margin-left: 10px;
+    padding: 2px 6px;
+    display: inline-block;
+}
+.delete-btn:hover {
+    background-color: red;
+    color: white;
+}
+

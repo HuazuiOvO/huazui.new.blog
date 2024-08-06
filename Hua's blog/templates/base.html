@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylr.css') }}">
+    <title>My Blog</title>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>My Blog</h1>
+            <div class="button-container">
+                {% if session.get('logged_in') %}
+                <button id="logout-button">退出登录</button>
+                {% else %}
+                <button id="login-button">以管理员身份登录</button>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+    <div class="sidebar">
+        <img src="{{ url_for('static', filename='your-avatar.jpg') }}" alt="Your Avatar">
+        <h2>Huazui OvO</h2>
+        <p>sleeping...</p>
+        <div class="widget">
+            <h3>Follow Me</h3>
+            <div class="social-links">
+                <a href="https://im.qq.com/index/"><img src="{{ url_for('static', filename='QQ.png') }}" alt="QQ"></a>
+                <a href="https://weixin.qq.com/"><img src="{{ url_for('static', filename='wechat.jpg') }}" alt="Wechat"></a>
+                <a href="https://www.bilibili.com/"><img src="{{ url_for('static', filename='bilibili.jpg') }}" alt="Bilibili"></a>
+            </div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('about') }}">About Me</a></li>
+                {% if session.get('logged_in') %}
+                <li><a href="{{ url_for('new_post') }}">New Post</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <form class="modal-content animate" action="{{ url_for('login') }}" method="post">
+            <div class="container">
+                <label for="admin_id"><b>Admin ID</b></label>
+                <input type="text" value="Huazui OvO" name="admin_id" readonly>
+                <label for="password"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="password" required>
+                <button type="submit">Login</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('login-button')?.addEventListener('click', function() {
+            document.getElementById('login-modal').style.display = 'block';
+        });
+
+        document.getElementById('logout-button')?.addEventListener('click', function() {
+            window.location.href = "{{ url_for('logout') }}";
+        });
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('login-modal')) {
+                document.getElementById('login-modal').style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>

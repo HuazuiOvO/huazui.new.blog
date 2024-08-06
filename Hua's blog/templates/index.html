@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Blog Posts</h2>
+    {% for post in posts %}
+    <div class="card">
+        <h3 class="card-title">{{ post.title }}</h3>
+        <p class="card-text">{{ post.content[:100] }}...</p>
+        <a href="{{ url_for('view_post', post_id=loop.index0) }}">Read More</a>
+        {% if post.filename %}
+        <p>
+            <a href="{{ url_for('uploaded_file', filename=post.filename) }}" target="_blank">Preview {{ post.filename }}</a> |
+            <a href="{{ url_for('uploaded_file', filename=post.filename) }}" download>Download {{ post.filename }}</a>
+        </p>
+        {% endif %}
+        {% if session.get('logged_in') %}
+        <form action="{{ url_for('delete_post', index=loop.index0) }}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
