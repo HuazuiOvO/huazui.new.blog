@@ -1,20 +1,15 @@
-import os
 import json
+import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
 from werkzeug.utils import secure_filename
-import subprocess
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-UPLOAD_FOLDER = 'uploads'  # 使用相对路径，GitHub仓库中的文件夹
+UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 DATA_FILE = 'posts.json'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# 确保目录存在
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -34,48 +29,12 @@ def load_posts():
             return posts
     return []
 
-def save_article(title, content):
-    # 安全地生成文件名
-    filename = secure_filename(title) + '.txt'  # 你可以选择.txt或.md
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
-    # 将内容写入文件
-    with open(filepath, 'w') as file:
-        file.write(content)
-
-    return filepath
-
-def push_to_github(filepath):
-    try:
-        subprocess.run(["git", "add", filepath], check=True)
-        subprocess.run(["git", "commit", "-m", f"Add article {os.path.basename(filepath)}"], check=True)
-        subprocess.run(["git", "push", "origin", "main"], check=True)
-    except subprocess.CalledProcessError as e:
-        app.logger.error(f"Git command failed: {e}")
-
-def pull_from_github():
-    try:
-        subprocess.run(["git", "pull", "origin", "main"], check=True)
-    except subprocess.CalledProcessError as e:
-        app.logger.error(f"Git pull failed: {e}")
 
 posts = load_posts()
 
 @app.route('/')
 def home():
-    # 拉取最新的文章内容
-    pull_from_github()
-
-    # 获取所有文章
-    articles = []
-    for filename in os.listdir(app.config['UPLOAD_FOLDER']):
-        if filename.endswith('.txt'):
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            with open(filepath, 'r') as file:
-                content = file.read()
-                articles.append({"title": filename[:-4], "content": content})
-
-    return render_template('index.html', posts=articles)
+    return render_template('index.html', posts=posts)
 
 @app.route('/about')
 def about():
@@ -94,17 +53,13 @@ def add_post():
     title = request.form['title']
     content = request.form['content']
     filename = None
-
-    # 保存文章内容为文件
-    filepath = save_article(title, content)
-
-    # 推送文件到GitHub仓库
-    push_to_github(filepath)
-
-    # 保存文章数据到posts列表中
-    posts.append({"title": title, "content": content, "filename": filepath, "comments": []})
+    if 'file' in request.files:
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    posts.append({"title": title, "content": content, "filename": filename, "comments": []})
     save_posts(posts)
-
     return redirect(url_for('home'))
 
 @app.route('/delete_post/<int:index>', methods=['POST'])
@@ -175,6 +130,8 @@ def delete_comment(post_id, comment_index):
     except Exception as e:
         app.logger.error(f"Error in delete_comment: {e}")
         return "An error occurred", 500
+
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
