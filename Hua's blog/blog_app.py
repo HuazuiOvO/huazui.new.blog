@@ -6,7 +6,7 @@ import subprocess
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-UPLOAD_FOLDER = 'huazui.new.blog/Hua\'s blog/uploads/'  # 在GitHub仓库中的文件夹
+UPLOAD_FOLDER = 'uploads'  # 使用相对路径，GitHub仓库中的文件夹
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 DATA_FILE = 'posts.json'
 
@@ -16,15 +16,12 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 def save_posts(posts):
     with open(DATA_FILE, 'w') as f:
         json.dump(posts, f, indent=4)
-
 
 def load_posts():
     if os.path.exists(DATA_FILE):
@@ -37,7 +34,6 @@ def load_posts():
             return posts
     return []
 
-
 def save_article(title, content):
     # 安全地生成文件名
     filename = secure_filename(title) + '.txt'  # 你可以选择.txt或.md
@@ -49,7 +45,6 @@ def save_article(title, content):
 
     return filepath
 
-
 def push_to_github(filepath):
     try:
         subprocess.run(["git", "add", filepath], check=True)
@@ -58,26 +53,39 @@ def push_to_github(filepath):
     except subprocess.CalledProcessError as e:
         app.logger.error(f"Git command failed: {e}")
 
+def pull_from_github():
+    try:
+        subprocess.run(["git", "pull", "origin", "main"], check=True)
+    except subprocess.CalledProcessError as e:
+        app.logger.error(f"Git pull failed: {e}")
 
 posts = load_posts()
 
-
 @app.route('/')
 def home():
-    return render_template('index.html', posts=posts)
+    # 拉取最新的文章内容
+    pull_from_github()
 
+    # 获取所有文章
+    articles = []
+    for filename in os.listdir(app.config['UPLOAD_FOLDER']):
+        if filename.endswith('.txt'):
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            with open(filepath, 'r') as file:
+                content = file.read()
+                articles.append({"title": filename[:-4], "content": content})
+
+    return render_template('index.html', posts=articles)
 
 @app.route('/about')
 def about():
     return render_template('about.html')
-
 
 @app.route('/new_post')
 def new_post():
     if not session.get('logged_in'):
         return redirect(url_for('home'))
     return render_template('new_post.html')
-
 
 @app.route('/add_post', methods=['POST'])
 def add_post():
@@ -99,7 +107,6 @@ def add_post():
 
     return redirect(url_for('home'))
 
-
 @app.route('/delete_post/<int:index>', methods=['POST'])
 def delete_post(index):
     if not session.get('logged_in'):
@@ -109,7 +116,6 @@ def delete_post(index):
         save_posts(posts)
     return redirect(url_for('home'))
 
-
 @app.route('/login', methods=['POST'])
 def login():
     if request.form['password'] == 'Suijinyang@12':
@@ -118,17 +124,14 @@ def login():
         flash('Incorrect password!')
     return redirect(url_for('home'))
 
-
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     return redirect(url_for('home'))
 
-
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
 
 @app.route('/post/<int:post_id>')
 def view_post(post_id):
@@ -140,7 +143,6 @@ def view_post(post_id):
     except Exception as e:
         app.logger.error(f"Error in view_post: {e}")
         return "An error occurred", 500
-
 
 @app.route('/add_comment/<int:post_id>', methods=['POST'])
 def add_comment(post_id):
@@ -160,7 +162,6 @@ def add_comment(post_id):
         app.logger.error(f"Error in add_comment: {e}")
         return "An error occurred", 500
 
-
 @app.route('/delete_comment/<int:post_id>/<int:comment_index>', methods=['POST'])
 def delete_comment(post_id, comment_index):
     try:
@@ -174,7 +175,6 @@ def delete_comment(post_id, comment_index):
     except Exception as e:
         app.logger.error(f"Error in delete_comment: {e}")
         return "An error occurred", 500
-
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
